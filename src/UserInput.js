@@ -14,14 +14,12 @@ const customTheme = {
         inputBorderColor: "#26c9b4",
         searchBgColor:
             "linear-gradient(45deg, rgba(7,111,121,0.6) 0%, rgba(19,157,171,0.6) 100%)",
-        //   "linear-gradient(45deg, rgba(14,87,210,0.5) 0%, rgba(43,140,203,0.5) 100%)",
         searchBgColorHover:
-            //   "linear-gradient(45deg, rgba(14,87,210,0.75) 0%, rgba(43,140,203,0.75) 100%)",
             "linear-gradient(45deg, rgba(7,111,121,0.8) 0%, rgba(19,157,171,0.8) 100%)",
     },
     t2: {
         inputColor: "#57072a",
-        inputBgColor: "rgba(87, 7, 42,0.2)", //
+        inputBgColor: "rgba(87, 7, 42,0.2)",
         inputBorderColor: "#ff006f",
         searchBgColor:
             "linear-gradient(45deg, rgba(87,7,42,0.6) 0%, rgba(138,33,79,0.6) 100%)",
@@ -105,21 +103,12 @@ const useStyles = makeStyles((theme) => ({
                 background: customTheme.t1.searchBgColorHover,
             },
         },
-        // "&:hover": {
-        //     background: customTheme.t1.searchBgColorHover,
-        // },
-        "& .MuiButton-root": {},
-        "& .MuiButtonBase-root": {},
         "& .MuiButton-contained": {
             boxShadow: "none",
         },
-        "& .MuiButton-label": {},
     },
     searchBtnPink: {
         background: customTheme.t2.searchBgColor,
-        // "&:hover": {
-        //     background: customTheme.t2.searchBgColorHover,
-        // },
         [theme.breakpoints.up("sm")]: {
             "&:hover": {
                 background: customTheme.t2.searchBgColorHover,
@@ -127,8 +116,7 @@ const useStyles = makeStyles((theme) => ({
         },
     },
 }));
-
-export const UserInput = ({ doFetch }) => {
+const UserInput = ({ doFetch }) => {
     const classes = useStyles();
     const { lang, themes, colorTheme, OPENWEATHER_API_KEY } = useContext(
         WeatherContext
@@ -142,8 +130,6 @@ export const UserInput = ({ doFetch }) => {
         if (city) {
             cityRef.current.value = "";
             countryCodeRef.current.value = "";
-            console.log("city: " + city);
-            console.log("country: " + countryCode);
             doFetch(
                 `weather?q=${city}${
                     countryCode ? "," + countryCode : ""
@@ -190,8 +176,6 @@ export const UserInput = ({ doFetch }) => {
 
                 <Button
                     aria-label="search"
-                    // color="primary"
-                    // variant="contained"
                     disableElevation
                     className={clss(
                         classes.searchBtn,

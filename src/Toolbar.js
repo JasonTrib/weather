@@ -52,29 +52,7 @@ const useStyles = makeStyles((theme) => ({
             color: "white",
         },
     },
-    selectMenu: {
-        // "& .MuiList": {
-        //     padding: "0px 0px",
-        // },
-        // "& .MuiList-root": {
-        //     padding: "0px 0px",
-        // },
-        // "& .MuiList-padding": {
-        //     padding: "0px 0px",
-        // },
-        // "& .MuiPaper-root": {
-        //     padding: "0px 0px",
-        // },
-        // "& .MuiPopover-root": {
-        //     padding: "0px 0px",
-        // },
-        // "& .MuiSelect-selectMenu": {
-        //     padding: "0px 0px",
-        // },
-        // "& .MuiMenu-list": {
-        //     padding: "0px 0px",
-        // },
-    },
+    selectMenu: {},
 }));
 
 const langList = ["EN", "EL", "FR", "GE", "ES", "PT", "RU"];

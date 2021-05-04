@@ -43,7 +43,7 @@ const Content = () => {
         OPENWEATHER_API_KEY,
     } = useContext(WeatherContext);
     const [{ response, error, isLoading }, doFetch] = useFetch(
-        "http://api.openweathermap.org/data/2.5/"
+        "https://api.openweathermap.org/data/2.5/"
     );
     const [data, setData] = useState(null);
     const [initFetch, setInitFetch] = useState(true);
@@ -68,7 +68,6 @@ const Content = () => {
     ]);
 
     useEffect(() => {
-        // console.log("response:\n" + JSON.stringify(response, null, 4));
         if (response) setData(response.data);
     }, [response]);
 

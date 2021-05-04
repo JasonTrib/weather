@@ -28,14 +28,12 @@ const useStyles = makeStyles((theme) => ({
         height: "32px",
         position: "absolute",
         right: "0",
-        // top: "70%",
         bottom: "2px",
         borderRadius: 0,
         transition: "none",
         "&.MuiButton-root": {
             minWidth: "0",
         },
-
         background: customTheme.t1.accordionBgColor,
         "&:hover": {
             background: customTheme.t1.accordionBgColor,
@@ -63,10 +61,8 @@ const useStyles = makeStyles((theme) => ({
         flexDirection: "row",
         justifyContent: "center",
         alignItems: "flex-end",
-        // marginBottom: "20px",
         paddingBottom: "20px",
         color: customTheme.t1.citynameColor,
-        // textShadow: "0.5px 1px 2px black",
     },
     citynameWrapperPink: {
         color: customTheme.t2.citynameColor,
