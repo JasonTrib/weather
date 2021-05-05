@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useMemo } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import WeatherContext from "./WeatherContext";
 import Accordion from "@material-ui/core/Accordion";
@@ -14,32 +14,11 @@ import Paper from "@material-ui/core/Paper";
 import { Typography } from "@material-ui/core";
 import clss from "classnames";
 
-const customTheme = {
-    t1: {
-        accordionBgColor: "rgba(186, 214, 224,0.2)",
-        accordionSummaryColor: "rgba(255,255,255,0.75)",
-        accordionIconColor: "rgba(255,255,255,0.75)",
-        accordionDetailsColor: "white",
-        accordionDetailsBgColor: "rgba(186, 214, 224,0.25)",
-        tableBorderColor: "rgba(255,255,255,0.5)",
-        tableColor: "white",
-    },
-    t2: {
-        accordionBgColor: "rgba(87, 7, 42,0.2)",
-        accordionSummaryColor: "#57072a",
-        accordionIconColor: "#57072a",
-        accordionDetailsColor: "black",
-        accordionDetailsBgColor: "rgba(255, 255,255,0.2)",
-        tableBorderColor: "rgba(0,0,0,0.25)",
-        tableColor: "black",
-    },
-};
-
 const useStyles = makeStyles((theme) => ({
     accordionHeading: {},
     accordion: {
         "&.MuiPaper-root": {
-            backgroundColor: customTheme.t1.accordionBgColor,
+            backgroundColor: (props) => props.accordionBgColor,
             boxShadow: "none",
         },
         "&.MuiAccordion-root": {},
@@ -49,49 +28,26 @@ const useStyles = makeStyles((theme) => ({
         "& .MuiAccordionSummary-root": {
             height: "48px",
             minHeight: "0px",
-            color: customTheme.t1.accordionSummaryColor,
+            color: (props) => props.accordionSummaryColor,
         },
         "& .MuiAccordionDetails-root": {
-            color: customTheme.t1.accordionDetailsColor,
-            backgroundColor: customTheme.t1.accordionDetailsBgColor,
+            color: (props) => props.accordionDetailsColor,
+            backgroundColor: (props) => props.accordionDetailsBgColor,
             padding: "10px 16px 10px",
             display: "block",
         },
     },
-    accordionPink: {
-        "&.MuiPaper-root": {
-            backgroundColor: customTheme.t2.accordionBgColor,
-        },
-        "& .MuiAccordionSummary-root": {
-            color: customTheme.t2.accordionSummaryColor,
-        },
-        "& .MuiAccordionDetails-root": {
-            color: customTheme.t2.accordionDetailsColor,
-            backgroundColor: customTheme.t2.accordionDetailsBgColor,
-        },
-    },
     accordionIcon: {
-        color: customTheme.t1.accordionIconColor,
-    },
-    accordionIconPink: {
-        color: customTheme.t2.accordionIconColor,
+        color: (props) => props.accordionIconColor,
     },
     table: {
         "& .MuiTableCell-root": {
             padding: "0px 0px 0px 0px",
-            borderBottomColor: customTheme.t1.tableBorderColor,
+            borderBottomColor: (props) => props.tableBorderColor,
         },
         "& .MuiTableCell-body": {
-            color: customTheme.t1.tableColor,
+            color: (props) => props.tableColor,
             fontSize: "10px",
-        },
-    },
-    tablePink: {
-        "& .MuiTableCell-root": {
-            borderBottomColor: customTheme.t2.tableBorderColor,
-        },
-        "& .MuiTableCell-body": {
-            color: customTheme.t2.tableColor,
         },
     },
     tableContainer: {
@@ -105,9 +61,31 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const WeatherDetails = ({ data }) => {
-    const classes = useStyles();
     const { isMetric, themes, colorTheme } = useContext(WeatherContext);
-
+    const props = useMemo(() => {
+        return colorTheme === themes[0]
+            ? {
+                  accordionBgColor: "rgba(186, 214, 224,0.2)",
+                  accordionSummaryColor: "rgba(255,255,255,0.75)",
+                  accordionIconColor: "rgba(255,255,255,0.75)",
+                  accordionDetailsColor: "white",
+                  accordionDetailsBgColor: "rgba(186, 214, 224,0.25)",
+                  tableBorderColor: "rgba(255,255,255,0.5)",
+                  tableColor: "white",
+              }
+            : colorTheme === themes[1]
+            ? {
+                  accordionBgColor: "rgba(87, 7, 42,0.2)",
+                  accordionSummaryColor: "#57072a",
+                  accordionIconColor: "#57072a",
+                  accordionDetailsColor: "black",
+                  accordionDetailsBgColor: "rgba(255, 255,255,0.2)",
+                  tableBorderColor: "rgba(0,0,0,0.25)",
+                  tableColor: "black",
+              }
+            : null;
+    }, [colorTheme, themes]);
+    const classes = useStyles(props);
     const [expanded, setExpanded] = React.useState(false);
 
     const handleAccordionChange = (panel) => (event, isExpanded) => {
@@ -152,19 +130,12 @@ const WeatherDetails = ({ data }) => {
                         expanded={expanded === "panel1"}
                         onChange={handleAccordionChange("panel1")}
                         square
-                        className={clss(
-                            classes.accordion,
-                            colorTheme === themes[1] && classes.accordionPink
-                        )}
+                        className={clss(classes.accordion)}
                     >
                         <AccordionSummary
                             expandIcon={
                                 <ExpandMoreIcon
-                                    className={clss(
-                                        classes.accordionIcon,
-                                        colorTheme === themes[1] &&
-                                            classes.accordionIconPink
-                                    )}
+                                    className={clss(classes.accordionIcon)}
                                 />
                             }
                             aria-controls="panel1bh-content"
@@ -180,11 +151,7 @@ const WeatherDetails = ({ data }) => {
                                 className={classes.tableContainer}
                             >
                                 <Table
-                                    className={clss(
-                                        classes.table,
-                                        colorTheme === themes[1] &&
-                                            classes.tablePink
-                                    )}
+                                    className={clss(classes.table)}
                                     size="small"
                                     aria-label="details"
                                 >

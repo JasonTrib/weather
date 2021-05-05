@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useMemo } from "react";
 import Button from "@material-ui/core/Button";
 import { makeStyles } from "@material-ui/core/styles";
 import WeatherContext from "./WeatherContext";
@@ -31,16 +31,7 @@ const useStyles = makeStyles((theme) => ({
         [theme.breakpoints.up("sm")]: {
             "&:hover": {
                 border: "1px solid rgba(127,127,127,1)",
-                background:
-                    "linear-gradient(180deg, rgba(7,111,121,0.6) 0%, rgba(7,111,121,0.2) 100%)",
-            },
-        },
-    },
-    toolbarBtnPink: {
-        [theme.breakpoints.up("sm")]: {
-            "&:hover": {
-                background:
-                    "linear-gradient(180deg, rgba(87,7,42,0.6) 0%, rgba(87,7,42,0.2) 100%)",
+                background: (props) => props.toolbarBtnBg,
             },
         },
     },
@@ -58,7 +49,6 @@ const useStyles = makeStyles((theme) => ({
 const langList = ["EN", "EL", "FR", "GE", "ES", "PT", "RU"];
 
 const Toolbar = () => {
-    const classes = useStyles();
     const {
         lang,
         setLang,
@@ -68,6 +58,20 @@ const Toolbar = () => {
         colorTheme,
         setColorTheme,
     } = useContext(WeatherContext);
+    const props = useMemo(() => {
+        return colorTheme === themes[0]
+            ? {
+                  toolbarBtnBg:
+                      "linear-gradient(180deg, rgba(7,111,121,0.6) 0%, rgba(7,111,121,0.2) 100%)",
+              }
+            : colorTheme === themes[1]
+            ? {
+                  toolbarBtnBg:
+                      "linear-gradient(180deg, rgba(87,7,42,0.6) 0%, rgba(87,7,42,0.2) 100%)",
+              }
+            : null;
+    }, [colorTheme, themes]);
+    const classes = useStyles(props);
 
     const handleLanguageChange = (event) => {
         setLang(event.target.value);
@@ -92,20 +96,14 @@ const Toolbar = () => {
             <Button
                 aria-label="units"
                 onClick={handleDegreeToggle}
-                className={clss(
-                    classes.toolbarBtn,
-                    colorTheme === themes[1] && classes.toolbarBtnPink
-                )}
+                className={clss(classes.toolbarBtn)}
             >
                 {isMetric ? "°C" : "°F"}
             </Button>
             <Button
                 aria-label="theme"
                 onClick={handleThemeChange}
-                className={clss(
-                    classes.toolbarBtn,
-                    colorTheme === themes[1] && classes.toolbarBtnPink
-                )}
+                className={clss(classes.toolbarBtn)}
             >
                 <PaletteIcon />
             </Button>
@@ -115,11 +113,7 @@ const Toolbar = () => {
                     onChange={handleLanguageChange}
                     displayEmpty
                     disableUnderline
-                    className={clss(
-                        classes.langSelect,
-                        classes.toolbarBtn,
-                        colorTheme === themes[1] && classes.toolbarBtnPink
-                    )}
+                    className={clss(classes.langSelect, classes.toolbarBtn)}
                     inputProps={{ "aria-label": "Without label" }}
                 >
                     {langList.map((e) => {

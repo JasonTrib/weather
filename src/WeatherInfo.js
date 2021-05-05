@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext } from "react";
+import React, { useEffect, useState, useContext, useMemo } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import WeatherContext from "./WeatherContext";
 import { Grid, Typography } from "@material-ui/core";
@@ -13,25 +13,10 @@ import {
     faSmog,
 } from "@fortawesome/free-solid-svg-icons";
 
-const customTheme = {
-    t1: {
-        gridColor: "white",
-        gridBgColor: "rgba(186, 214, 224,0.2)",
-    },
-    t2: {
-        gridColor: "#57072a",
-        gridBgColor: "rgba(87, 7, 42,0.2)",
-    },
-};
-
 const useStyles = makeStyles((theme) => ({
     gridOuter: {
-        backgroundColor: customTheme.t1.gridBgColor,
-        color: customTheme.t1.gridColor,
-    },
-    gridOuterPink: {
-        backgroundColor: customTheme.t2.gridBgColor,
-        color: customTheme.t2.gridColor,
+        backgroundColor: (props) => props.gridBgColor,
+        color: (props) => props.gridColor,
     },
 }));
 
@@ -45,9 +30,21 @@ const weatherIcons = {
 };
 
 const WeatherInfo = ({ data }) => {
-    const classes = useStyles();
     const { isMetric, themes, colorTheme } = useContext(WeatherContext);
-
+    const props = useMemo(() => {
+        return colorTheme === themes[0]
+            ? {
+                  gridColor: "white",
+                  gridBgColor: "rgba(186, 214, 224,0.2)",
+              }
+            : colorTheme === themes[1]
+            ? {
+                  gridColor: "#57072a",
+                  gridBgColor: "rgba(87, 7, 42,0.2)",
+              }
+            : null;
+    }, [colorTheme, themes]);
+    const classes = useStyles(props);
     const [temp, setTemp] = useState(null);
     const [isDay, setIsDay] = useState(true);
     const [iconDisplay, setIconDisplay] = useState(null);
@@ -87,10 +84,7 @@ const WeatherInfo = ({ data }) => {
                 direction="row"
                 justify="center"
                 alignItems="center"
-                className={clss(
-                    classes.gridOuter,
-                    colorTheme === themes[1] && classes.gridOuterPink
-                )}
+                className={clss(classes.gridOuter)}
             >
                 <Grid item xs={6}>
                     <div

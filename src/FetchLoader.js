@@ -1,33 +1,31 @@
-import React, { useContext } from "react";
+import React, { useContext, useMemo } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import WeatherContext from "./WeatherContext";
 import Loader from "react-loader-spinner";
-
 import { Typography } from "@material-ui/core";
 import clss from "classnames";
-
-const customTheme = {
-    t1: {
-        messageColor: "white",
-    },
-    t2: {
-        messageColor: "#57072a",
-    },
-};
 
 const useStyles = makeStyles((theme) => ({
     message: {
         fontSize: "30px",
-        color: customTheme.t1.messageColor,
-    },
-    messagePink: {
-        color: customTheme.t2.messageColor,
+        color: (props) => props.messageColor,
     },
 }));
 
 const FetchLoader = ({ data, isLoading }) => {
-    const classes = useStyles();
     const { themes, colorTheme } = useContext(WeatherContext);
+    const props = useMemo(() => {
+        return colorTheme === themes[0]
+            ? {
+                  messageColor: "white",
+              }
+            : colorTheme === themes[1]
+            ? {
+                  messageColor: "#57072a",
+              }
+            : null;
+    }, [colorTheme, themes]);
+    const classes = useStyles(props);
 
     return (
         <div
@@ -41,12 +39,7 @@ const FetchLoader = ({ data, isLoading }) => {
             }}
         >
             {!data && !isLoading && (
-                <Typography
-                    className={clss(
-                        classes.message,
-                        colorTheme === themes[1] && classes.messagePink
-                    )}
-                >
+                <Typography className={clss(classes.message)}>
                     <i>No weather data</i>
                 </Typography>
             )}

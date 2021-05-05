@@ -1,4 +1,4 @@
-import React, { useRef, useContext } from "react";
+import React, { useRef, useContext, useMemo } from "react";
 import TextField from "@material-ui/core/TextField";
 import Button from "@material-ui/core/Button";
 import { makeStyles } from "@material-ui/core/styles";
@@ -6,27 +6,6 @@ import SearchIcon from "@material-ui/icons/Search";
 import WeatherContext from "./WeatherContext";
 import Tooltip from "@material-ui/core/Tooltip";
 import clss from "classnames";
-
-const customTheme = {
-    t1: {
-        inputColor: "white",
-        inputBgColor: "rgba(186, 214, 224,0.2)",
-        inputBorderColor: "#26c9b4",
-        searchBgColor:
-            "linear-gradient(45deg, rgba(7,111,121,0.6) 0%, rgba(19,157,171,0.6) 100%)",
-        searchBgColorHover:
-            "linear-gradient(45deg, rgba(7,111,121,0.8) 0%, rgba(19,157,171,0.8) 100%)",
-    },
-    t2: {
-        inputColor: "#57072a",
-        inputBgColor: "rgba(87, 7, 42,0.2)",
-        inputBorderColor: "#ff006f",
-        searchBgColor:
-            "linear-gradient(45deg, rgba(87,7,42,0.6) 0%, rgba(138,33,79,0.6) 100%)",
-        searchBgColorHover:
-            "linear-gradient(45deg, rgba(87,7,42,0.8) 0%, rgba(138,33,79,0.8) 100%)",
-    },
-};
 
 const useStyles = makeStyles((theme) => ({
     inputContainer: {
@@ -36,7 +15,7 @@ const useStyles = makeStyles((theme) => ({
     cityField: {
         margin: "0 2px 0 0",
         "& .MuiInputBase-root": {
-            color: customTheme.t1.inputColor,
+            color: (props) => props.inputColor,
             fontSize: "19px",
             letterSpacing: "0.03em",
         },
@@ -45,13 +24,13 @@ const useStyles = makeStyles((theme) => ({
             height: "30px",
             textTransform: "capitalize",
             "&::placeholder": {
-                color: customTheme.t1.inputColor,
+                color: (props) => props.inputColor,
                 opacity: 0.25,
             },
         },
         "& .MuiFilledInput-root": {
             borderRadius: "0px",
-            backgroundColor: customTheme.t1.inputBgColor,
+            backgroundColor: (props) => props.inputBgColor,
         },
         "& .MuiFilledInput-underline:before": {
             borderBottom: "none",
@@ -60,23 +39,7 @@ const useStyles = makeStyles((theme) => ({
             transition: "none",
             borderBottomStyle: "solid",
             borderBottomWidth: "2px",
-            borderBottomColor: customTheme.t1.inputBorderColor,
-        },
-    },
-    cityFieldPink: {
-        "& .MuiInputBase-root": {
-            color: customTheme.t2.inputColor,
-        },
-        "& .MuiInputBase-input": {
-            "&::placeholder": {
-                color: customTheme.t2.inputColor,
-            },
-        },
-        "& .MuiFilledInput-root": {
-            backgroundColor: customTheme.t2.inputBgColor,
-        },
-        "& .MuiFilledInput-underline:after": {
-            borderBottomColor: customTheme.t2.inputBorderColor,
+            borderBottomColor: (props) => props.inputBorderColor,
         },
     },
     countryCodeField: {
@@ -97,30 +60,45 @@ const useStyles = makeStyles((theme) => ({
         width: "72px",
         minWidth: "48px",
         color: "white",
-        background: customTheme.t1.searchBgColor,
+        background: (props) => props.searchBgColor,
         [theme.breakpoints.up("sm")]: {
             "&:hover": {
-                background: customTheme.t1.searchBgColorHover,
+                background: (props) => props.searchBgColorHover,
             },
         },
         "& .MuiButton-contained": {
             boxShadow: "none",
         },
     },
-    searchBtnPink: {
-        background: customTheme.t2.searchBgColor,
-        [theme.breakpoints.up("sm")]: {
-            "&:hover": {
-                background: customTheme.t2.searchBgColorHover,
-            },
-        },
-    },
 }));
 const UserInput = ({ doFetch }) => {
-    const classes = useStyles();
     const { lang, themes, colorTheme, OPENWEATHER_API_KEY } = useContext(
         WeatherContext
     );
+    const props = useMemo(() => {
+        return colorTheme === themes[0]
+            ? {
+                  inputColor: "white",
+                  inputBgColor: "rgba(186, 214, 224,0.2)",
+                  inputBorderColor: "#26c9b4",
+                  searchBgColor:
+                      "linear-gradient(45deg, rgba(7,111,121,0.6) 0%, rgba(19,157,171,0.6) 100%)",
+                  searchBgColorHover:
+                      "linear-gradient(45deg, rgba(7,111,121,0.8) 0%, rgba(19,157,171,0.8) 100%)",
+              }
+            : colorTheme === themes[1]
+            ? {
+                  inputColor: "#57072a",
+                  inputBgColor: "rgba(87, 7, 42,0.2)",
+                  inputBorderColor: "#ff006f",
+                  searchBgColor:
+                      "linear-gradient(45deg, rgba(87,7,42,0.6) 0%, rgba(138,33,79,0.6) 100%)",
+                  searchBgColorHover:
+                      "linear-gradient(45deg, rgba(87,7,42,0.8) 0%, rgba(138,33,79,0.8) 100%)",
+              }
+            : null;
+    }, [colorTheme, themes]);
+    const classes = useStyles(props);
     const cityRef = useRef();
     const countryCodeRef = useRef();
 
@@ -143,6 +121,7 @@ const UserInput = ({ doFetch }) => {
             getData();
         }
     };
+
     return (
         <>
             <div className={classes.inputContainer}>
@@ -151,10 +130,7 @@ const UserInput = ({ doFetch }) => {
                     placeholder="City"
                     inputRef={cityRef}
                     onKeyPress={handleKeyPress}
-                    className={clss(
-                        classes.cityField,
-                        colorTheme === themes[1] && classes.cityFieldPink
-                    )}
+                    className={clss(classes.cityField)}
                     style={{ flex: " 1 1 80px" }}
                 />
                 <Tooltip title="country code" arrow placement="bottom">
@@ -165,7 +141,6 @@ const UserInput = ({ doFetch }) => {
                         onKeyPress={handleKeyPress}
                         className={clss(
                             classes.cityField,
-                            colorTheme === themes[1] && classes.cityFieldPink,
                             classes.countryCodeField
                         )}
                         inputProps={{
@@ -177,10 +152,7 @@ const UserInput = ({ doFetch }) => {
                 <Button
                     aria-label="search"
                     disableElevation
-                    className={clss(
-                        classes.searchBtn,
-                        colorTheme === themes[1] && classes.searchBtnPink
-                    )}
+                    className={clss(classes.searchBtn)}
                     onClick={getData}
                 >
                     <SearchIcon />

@@ -1,25 +1,10 @@
-import React, { useContext } from "react";
+import React, { useContext, useMemo } from "react";
 import Button from "@material-ui/core/Button";
 import { makeStyles } from "@material-ui/core/styles";
 import WeatherContext from "./WeatherContext";
 import RefreshIcon from "@material-ui/icons/Refresh";
 import { Typography } from "@material-ui/core";
 import clss from "classnames";
-
-const customTheme = {
-    t1: {
-        searchBgColorHover:
-            "linear-gradient(45deg, rgba(7,111,121,0.8) 0%, rgba(19,157,171,0.8) 100%)",
-        citynameColor: "white",
-        accordionBgColor: "rgba(186, 214, 224,0.2)",
-    },
-    t2: {
-        searchBgColorHover:
-            "linear-gradient(45deg, rgba(87,7,42,0.8) 0%, rgba(138,33,79,0.8) 100%)",
-        citynameColor: "#57072a",
-        accordionBgColor: "rgba(87, 7, 42,0.2)",
-    },
-};
 
 const useStyles = makeStyles((theme) => ({
     refreshBtn: {
@@ -34,24 +19,13 @@ const useStyles = makeStyles((theme) => ({
         "&.MuiButton-root": {
             minWidth: "0",
         },
-        background: customTheme.t1.accordionBgColor,
+        background: (props) => props.accordionBgColor,
         "&:hover": {
-            background: customTheme.t1.accordionBgColor,
+            background: (props) => props.accordionBgColor,
         },
         [theme.breakpoints.up("sm")]: {
             "&:hover": {
-                background: customTheme.t1.searchBgColorHover,
-            },
-        },
-    },
-    refreshBtnPink: {
-        background: customTheme.t2.accordionBgColor,
-        "&:hover": {
-            background: customTheme.t2.accordionBgColor,
-        },
-        [theme.breakpoints.up("sm")]: {
-            "&:hover": {
-                background: customTheme.t2.searchBgColorHover,
+                background: (props) => props.searchBgColorHover,
             },
         },
     },
@@ -62,18 +36,32 @@ const useStyles = makeStyles((theme) => ({
         justifyContent: "center",
         alignItems: "flex-end",
         paddingBottom: "20px",
-        color: customTheme.t1.citynameColor,
-    },
-    citynameWrapperPink: {
-        color: customTheme.t2.citynameColor,
+        color: (props) => props.citynameColor,
     },
 }));
 
 const LocationInfo = ({ data, doFetch }) => {
-    const classes = useStyles();
     const { lang, themes, colorTheme, OPENWEATHER_API_KEY } = useContext(
         WeatherContext
     );
+    const props = useMemo(() => {
+        return colorTheme === themes[0]
+            ? {
+                  searchBgColorHover:
+                      "linear-gradient(45deg, rgba(7,111,121,0.8) 0%, rgba(19,157,171,0.8) 100%)",
+                  citynameColor: "white",
+                  accordionBgColor: "rgba(186, 214, 224,0.2)",
+              }
+            : colorTheme === themes[1]
+            ? {
+                  searchBgColorHover:
+                      "linear-gradient(45deg, rgba(87,7,42,0.8) 0%, rgba(138,33,79,0.8) 100%)",
+                  citynameColor: "#57072a",
+                  accordionBgColor: "rgba(87, 7, 42,0.2)",
+              }
+            : null;
+    }, [colorTheme, themes]);
+    const classes = useStyles(props);
 
     const handleRefresh = () => {
         doFetch(
@@ -82,12 +70,7 @@ const LocationInfo = ({ data, doFetch }) => {
     };
 
     return (
-        <div
-            className={clss(
-                classes.citynameWrapper,
-                colorTheme === themes[1] && classes.citynameWrapperPink
-            )}
-        >
+        <div className={clss(classes.citynameWrapper)}>
             <Typography style={{ fontSize: "2rem" }}>
                 {data?.name || ""}
             </Typography>
@@ -98,10 +81,7 @@ const LocationInfo = ({ data, doFetch }) => {
                 <Button
                     aria-label="refresh"
                     onClick={handleRefresh}
-                    className={clss(
-                        classes.refreshBtn,
-                        colorTheme === themes[1] && classes.refreshBtnPink
-                    )}
+                    className={clss(classes.refreshBtn)}
                 >
                     <RefreshIcon />
                 </Button>
