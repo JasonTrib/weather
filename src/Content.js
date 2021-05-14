@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext } from "react";
+import React, { useEffect, useState, useContext, useMemo } from "react";
 import useFetch from "./utils/useFetch.js";
 import { makeStyles } from "@material-ui/core/styles";
 import WeatherContext from "./WeatherContext";
@@ -20,10 +20,7 @@ const useStyles = makeStyles((theme) => ({
             width: "100%",
         },
         backgroundSize: "cover",
-        backgroundImage: `url(${tealbg})`,
-    },
-    cardWrapperPink: {
-        backgroundImage: `url(${pinkbg})`,
+        backgroundImage: (props) => props.backgroundImage,
     },
     contentWrapper: {
         display: "flex",
@@ -33,7 +30,6 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const Content = () => {
-    const classes = useStyles();
     const {
         lang,
         themes,
@@ -42,6 +38,18 @@ const Content = () => {
         setLocation,
         OPENWEATHER_API_KEY,
     } = useContext(WeatherContext);
+    const props = useMemo(() => {
+        return colorTheme === themes[0]
+            ? {
+                  backgroundImage: `url(${tealbg})`,
+              }
+            : colorTheme === themes[1]
+            ? {
+                  backgroundImage: `url(${pinkbg})`,
+              }
+            : null;
+    }, [colorTheme, themes]);
+    const classes = useStyles(props);
     const [{ response, error, isLoading }, doFetch] = useFetch(
         "https://api.openweathermap.org/data/2.5/"
     );
@@ -92,12 +100,7 @@ const Content = () => {
 
     return (
         <>
-            <div
-                className={clss(
-                    classes.cardWrapper,
-                    colorTheme === themes[1] && classes.cardWrapperPink
-                )}
-            >
+            <div className={clss(classes.cardWrapper)}>
                 <Toolbar />
                 <div className={clss(classes.contentWrapper)}>
                     <UserInput doFetch={doFetch} />

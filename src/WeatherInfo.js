@@ -20,7 +20,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const iconSize = "4x";
+const iconSize = "6x";
 const weatherIcons = {
     Clear: <FontAwesomeIcon icon={faSun} size={iconSize} />,
     Clouds: <FontAwesomeIcon icon={faCloud} size={iconSize} />,
